@@ -1,28 +1,21 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Since from '../since';
+import Timer from '../timer/timer';
 
 export default class Task extends Component {
-  static propTypes = {
-    onItemEdited: PropTypes.func.isRequired,
-    onItemDeleted: PropTypes.func.isRequired,
-    onToggleCompleted: PropTypes.func.isRequired,
-    task: PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      text: PropTypes.string.isRequired,
-      startTime: PropTypes.instanceOf(Date).isRequired,
-      isCompleted: PropTypes.bool.isRequired,
-    }).isRequired,
+  state = {
+    editedText: '',
+    isEditing: false,
   };
 
-  constructor(props) {
-    super(props);
-    const { text } = props.task;
+  componentDidMount() {
+    const { task } = this.props;
+    const { taskText } = task;
 
-    this.state = {
-      isEditing: false,
-      editedText: text,
-    };
+    this.setState({
+      editedText: taskText,
+    });
   }
 
   onEdited = () => {
@@ -38,12 +31,13 @@ export default class Task extends Component {
   };
 
   onSubmit = (event) => {
-    const { onItemEdited, task } = this.props;
+    const { onTaskTextEdited, task } = this.props;
     const { id } = task;
     const { editedText } = this.state;
 
     if (editedText) {
-      onItemEdited(id, editedText);
+      onTaskTextEdited(id, editedText);
+
       this.setState({
         isEditing: false,
       });
@@ -53,10 +47,9 @@ export default class Task extends Component {
   };
 
   render() {
-    const { isEditing, editedText } = this.state;
-
-    const { task, onItemDeleted, onToggleCompleted } = this.props;
-    const { text, startTime, isCompleted } = task;
+    const { editedText, isEditing } = this.state;
+    const { task, onTimeLeftEdited, onTaskDeleted, onToggleCompleted } = this.props;
+    const { taskText, startTime, isCompleted, timeLeft } = task;
 
     let taskClass = null;
 
@@ -69,18 +62,33 @@ export default class Task extends Component {
     return (
       <li className={taskClass}>
         <div className="view">
-          <input className="toggle" checked={isCompleted} type="checkbox" onChange={onToggleCompleted} />
+          <input className="toggle" onChange={onToggleCompleted} checked={isCompleted} type="checkbox" />
           <label>
-            <span className="description">{text}</span>
+            <span className="title">{taskText}</span>
+            <Timer timeLeft={timeLeft} onTimeLeftEdited={onTimeLeftEdited} />
             <Since startTime={startTime} />
           </label>
           <button className="icon icon-edit" onClick={this.onEdited} type="button" aria-label="Edit button" />
-          <button className="icon icon-destroy" onClick={onItemDeleted} type="button" aria-label="Destroy button" />
+          <button className="icon icon-destroy" onClick={onTaskDeleted} type="button" aria-label="Destroy button" />
         </div>
         <form onSubmit={this.onSubmit}>
-          <input type="text" className="edit" onChange={this.onTaskEdit} value={editedText} />
+          <input className="edit" onChange={this.onTaskEdit} value={editedText} type="text" />
         </form>
       </li>
     );
   }
 }
+
+Task.propTypes = {
+  onTimeLeftEdited: PropTypes.func.isRequired,
+  onTaskTextEdited: PropTypes.func.isRequired,
+  onTaskDeleted: PropTypes.func.isRequired,
+  onToggleCompleted: PropTypes.func.isRequired,
+  task: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    isCompleted: PropTypes.bool.isRequired,
+    startTime: PropTypes.instanceOf(Date).isRequired,
+    taskText: PropTypes.string.isRequired,
+    timeLeft: PropTypes.number.isRequired,
+  }).isRequired,
+};

@@ -2,16 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Task from '../task';
 
-const TaskList = ({ tasks, onItemDeleted, onItemEdited, onToggleCompleted }) => {
+const TaskList = ({ tasks, onTimeLeftEdited, onTaskDeleted, onTaskTextEdited, onToggleCompleted }) => {
   const tasksList = tasks.map((task) => {
     const { id } = task;
-
     return (
       <Task
         key={id}
         task={task}
-        onItemDeleted={() => onItemDeleted(id)}
-        onItemEdited={onItemEdited}
+        onTimeLeftEdited={(timeLeft) => onTimeLeftEdited(id, timeLeft)}
+        onTaskDeleted={() => onTaskDeleted(id)}
+        onTaskTextEdited={onTaskTextEdited}
         onToggleCompleted={() => onToggleCompleted(id)}
       />
     );
@@ -24,13 +24,15 @@ TaskList.propTypes = {
   tasks: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
-      text: PropTypes.string.isRequired,
-      startTime: PropTypes.instanceOf(Date).isRequired,
       isCompleted: PropTypes.bool.isRequired,
+      startTime: PropTypes.instanceOf(Date).isRequired,
+      taskText: PropTypes.string.isRequired,
+      timeLeft: PropTypes.number.isRequired,
     }).isRequired
   ).isRequired,
-  onItemDeleted: PropTypes.func.isRequired,
-  onItemEdited: PropTypes.func.isRequired,
+  onTimeLeftEdited: PropTypes.func.isRequired,
+  onTaskDeleted: PropTypes.func.isRequired,
+  onTaskTextEdited: PropTypes.func.isRequired,
   onToggleCompleted: PropTypes.func.isRequired,
 };
 

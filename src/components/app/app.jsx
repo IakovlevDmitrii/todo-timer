@@ -1,93 +1,89 @@
 import React, { Component } from 'react';
-
 import NewTaskForm from '../new-task-form';
 import TaskList from '../task-list';
 import Footer from '../footer';
 
-const filterItems = (items, filter) => {
+import '../../style.css';
+
+const filterTasks = (tasks, filter) => {
   switch (filter) {
     case 'all':
-      return items;
+      return tasks;
 
     case 'active':
-      return items.filter((item) => !item.isCompleted);
+      return tasks.filter((task) => !task.isCompleted);
 
     case 'completed':
-      return items.filter((item) => item.isCompleted);
+      return tasks.filter((task) => task.isCompleted);
 
     default:
-      return items;
+      return tasks;
   }
 };
 
 export default class App extends Component {
-  maxTaskDataId = 0;
+  maxId = 1;
 
   state = {
-    taskData: [this.createTaskDataItem('First'), this.createTaskDataItem('Second'), this.createTaskDataItem('Third')],
+    tasks: [this.createTask('First', 60), this.createTask('Second', 60), this.createTask('Third', 60)],
     filter: 'all',
   };
 
-  deleteTaskDataItem = (id) => {
-    this.setState(({ taskData }) => {
-      const index = taskData.findIndex((el) => el.id === id);
-
-      const newTaskData = [...taskData.slice(0, index), ...taskData.slice(index + 1)];
+  deleteTask = (id) => {
+    this.setState(({ tasks }) => {
+      const index = tasks.findIndex((task) => task.id === id);
+      const newTasks = [...tasks.slice(0, index), ...tasks.slice(index + 1)];
 
       return {
-        taskData: newTaskData,
+        tasks: newTasks,
       };
     });
   };
 
-  deleteAllCompletedItems = () => {
-    this.setState(({ taskData }) => {
-      const newTaskData = taskData.filter((item) => !item.isCompleted);
+  deleteAllCompleted = () => {
+    this.setState(({ tasks }) => {
+      const newTasks = tasks.filter((task) => !task.isCompleted);
 
       return {
-        taskData: newTaskData,
+        tasks: newTasks,
       };
     });
   };
 
-  addTaskDataItem = (text) => {
-    const newTaskDataItem = this.createTaskDataItem(text);
+  addTask = (taskText, timeLeft) => {
+    const newTask = this.createTask(taskText, timeLeft);
 
-    this.setState(({ taskData }) => {
-      const newTaskData = [...taskData, newTaskDataItem];
+    this.setState(({ tasks }) => {
+      const newTasks = [...tasks, newTask];
 
       return {
-        taskData: newTaskData,
+        tasks: newTasks,
       };
     });
   };
 
-  editTaskDataItem = (id, text) => {
-    this.setState(({ taskData }) => {
-      const taskIndex = taskData.findIndex((task) => task.id === id);
-
-      const oldItem = taskData[taskIndex];
-      const newItem = { ...oldItem, text };
-
-      const newTaskData = [...taskData.slice(0, taskIndex), newItem, ...taskData.slice(taskIndex + 1)];
+  editTaskText = (id, taskText) => {
+    this.setState(({ tasks }) => {
+      const index = tasks.findIndex((task) => task.id === id);
+      const oldTask = tasks[index];
+      const newTask = { ...oldTask, taskText };
+      const newTasks = [...tasks.slice(0, index), newTask, ...tasks.slice(index + 1)];
 
       return {
-        taskData: newTaskData,
+        tasks: newTasks,
       };
     });
   };
 
   onToggleCompleted = (id) => {
-    this.setState(({ taskData }) => {
-      const taskIndex = taskData.findIndex((task) => task.id === id);
-
-      const oldItem = taskData[taskIndex];
-      const newItem = { ...oldItem, isCompleted: !oldItem.isCompleted };
-
-      const newTaskData = [...taskData.slice(0, taskIndex), newItem, ...taskData.slice(taskIndex + 1)];
+    this.setState(({ tasks }) => {
+      const index = tasks.findIndex((task) => task.id === id);
+      const oldTask = tasks[index];
+      const newTask = { ...oldTask, isCompleted: !oldTask.isCompleted };
+      const newTasks = [...tasks.slice(0, index), newTask, ...tasks.slice(index + 1)];
 
       return {
-        taskData: newTaskData,
+        tasks: newTasks,
       };
     });
   };
@@ -96,38 +92,51 @@ export default class App extends Component {
     this.setState({ filter });
   };
 
-  createTaskDataItem(text) {
-    const id = this.maxTaskDataId;
-    this.maxTaskDataId += 1;
+  editTimeLeft = (id, timeLeft) => {
+    this.setState(({ tasks }) => {
+      const index = tasks.findIndex((task) => task.id === id);
+      const oldTask = tasks[index];
+      const newTask = { ...oldTask, timeLeft };
+      const newTasks = [...tasks.slice(0, index), newTask, ...tasks.slice(index + 1)];
+
+      return {
+        tasks: newTasks,
+      };
+    });
+  };
+
+  createTask(taskText, timeLeft = 0) {
+    const id = this.maxId;
+    this.maxId += 1;
 
     return {
       id,
-      text,
-      startTime: new Date(),
       isCompleted: false,
+      startTime: new Date(),
+      taskText,
+      timeLeft,
     };
   }
 
   render() {
-    const { taskData, filter } = this.state;
-
-    const visibleTasks = filterItems(taskData, filter);
-
-    const todoCount = taskData.filter((task) => !task.isCompleted).length;
+    const { tasks, filter } = this.state;
+    const visibleTasks = filterTasks(tasks, filter);
+    const todoCount = tasks.filter((task) => !task.isCompleted).length;
 
     return (
       <section className="todoapp">
-        <NewTaskForm onItemAdded={this.addTaskDataItem} />
+        <NewTaskForm onTaskAdded={this.addTask} />
         <section className="main">
           <TaskList
             tasks={visibleTasks}
-            onItemEdited={this.editTaskDataItem}
-            onItemDeleted={this.deleteTaskDataItem}
+            onTimeLeftEdited={this.editTimeLeft}
+            onTaskTextEdited={this.editTaskText}
+            onTaskDeleted={this.deleteTask}
             onToggleCompleted={this.onToggleCompleted}
           />
           <Footer
             toDo={todoCount}
-            onDeleted={this.deleteAllCompletedItems}
+            onDeleted={this.deleteAllCompleted}
             onFilterChange={this.onFilterChange}
             filter={filter}
           />
