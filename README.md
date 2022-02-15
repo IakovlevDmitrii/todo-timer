@@ -12,7 +12,6 @@
 > - CSS
 > - JS
 > - React
-> - Ant Design
 > - #### Webpack
 >> - Babel
 >> - ESLint
