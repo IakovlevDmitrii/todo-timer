@@ -1,29 +1,30 @@
-todo app
+# Учебный проект
+В рамках программы изучения React
 
-Решение можно посмотреть здесь:
-https://todo-timer.vercel.app/
+### Цель:
+Изучение React
 
-Инструменты:
+### Задание:
+Добавить в [ToDo приложение](https://github.com/IakovlevDmitrii/todo) таймер
 
-React
+### Инструменты:
+> - HTML
+> - CSS
+> - JS
+> - React
+> - Ant Design
+> - #### Webpack
+>> - Babel
+>> - ESLint
+>> - Lint-staged
+>> - Prettier
+>> - Husky
 
-antd:
-https://ant.design/
+### Решение можно посмотреть [здесь](https://todo-timer.vercel.app/)
 
-date-fns:
-https://date-fns.org/
+---
+_Создан_:  
+Mar 29, 2021
 
-lodash:
-https://lodash.com/
-
-prop-types
-
-babel
-
-eslint
-
-lint-staged
-
-prettier
-
-husky
+_Последние изменения_:  
+Feb 15, 2022
